@@ -1,3 +1,26 @@
+resource "random_id" "cluster_name" {
+  byte_length = 6
+}
+
+
+resource "random_id" "username" {
+  count    = var.enable_oracle ? 1 : 0
+  byte_length = 14
+}
+
+resource "random_id" "password" {
+  count    = var.enable_oracle ? 1 : 0
+  byte_length = 18
+}
+
+## Get your workstation external IPv4 address:
+data "http" "workstation-external-ip" {
+  url = "http://ipv4.icanhazip.com"
+}
+
+locals {
+  workstation-external-cidr = "${chomp(data.http.workstation-external-ip.body)}/32"
+}
 
 /**
  * Get the avaialbility domains for this tennancy.
@@ -38,7 +61,7 @@ resource "oci_identity_policy" "test_policy" {
  */
 resource "oci_core_vcn" "oke-vcn" {
   count = var.enable_oracle ? 1 : 0
-  cidr_block = var.cidr_block
+  cidr_block = var.oci_cidr_block
   compartment_id = var.oci_tenancy_ocid
 
   display_name = "${var.oci_cluster_name}_vcn"
@@ -106,7 +129,7 @@ resource "oci_core_default_security_list" "oke-default-security-list" {
   // allow inbound ssh traffic
   ingress_security_rules {
     protocol = "6" // tcp
-    source = "${var.workstation_ipv4}"
+    source = local.workstation-external-cidr
     stateless = false
 
     tcp_options {
@@ -137,7 +160,7 @@ resource "oci_core_default_security_list" "oke-default-security-list" {
  *  - Conatins two ingress rules to allow SSH traffic from OCI Cluster service.
  */
 resource "oci_core_security_list" "oke-worker-security-list" {
-  count = var.enable_oracle ? var.subnets : 0
+  count = var.enable_oracle ? var.oci_subnets : 0
   compartment_id = var.oci_tenancy_ocid
   display_name = "${var.oci_cluster_name}-Workers-SecList"
   vcn_id = oci_core_vcn.oke-vcn.0.id
@@ -149,7 +172,7 @@ resource "oci_core_security_list" "oke-worker-security-list" {
   }
 
   egress_security_rules {
-    destination = cidrsubnet(var.cidr_block, 8, count.index)
+    destination = cidrsubnet(var.oci_cidr_block, 8, count.index)
     protocol = "all"
     stateless = true
   }
@@ -160,7 +183,7 @@ resource "oci_core_security_list" "oke-worker-security-list" {
     stateless = true
 
     protocol = "all"
-    source = cidrsubnet(var.cidr_block, 8, count.index)
+    source = cidrsubnet(var.oci_cidr_block, 8, count.index)
   }
 
   ingress_security_rules {
@@ -208,7 +231,7 @@ resource "oci_core_security_list" "oke-worker-security-list" {
   # SSH Stateful ingress rules
   ingress_security_rules {
     protocol = "6" // tcp
-    source = "${var.workstation_ipv4}"
+    source = local.workstation-external-cidr
     stateless = false
 
     tcp_options {
@@ -246,7 +269,7 @@ resource "oci_core_security_list" "oke-lb-security-list" {
  *
  * Worker Subnets
  * --------------
- * 2 Subnets (see var.subnets variable) are for worker nodes in the node pool.
+ * 2 Subnets (see var.oci_subnets variable) are for worker nodes in the node pool.
  * The workers are spred across 3 availability  domains, and one subnet
  * is created for each AD to host workers in that AD. 
  * Obviously worker is a generic term, and assumes that the workload is homogeneous.
@@ -265,10 +288,10 @@ resource "oci_core_security_list" "oke-lb-security-list" {
  *
  */
 resource "oci_core_subnet" "oke-subnet-worker" {
-  count = var.enable_oracle ? var.subnets : 0
+  count = var.enable_oracle ? var.oci_subnets : 0
   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.0.availability_domains[0], "name")}"
   #cidr_block          = "${var.oci_vcn_cidr_prefix}.10.0/24"
-  cidr_block = cidrsubnet(var.cidr_block, 8, var.subnets + count.index)
+  cidr_block = cidrsubnet(var.oci_cidr_block, 8, var.oci_subnets + count.index)
   display_name = "${var.oci_cluster_name}-WorkerSubnet${count.index}"
   dns_label = "workers${count.index}"
   compartment_id = var.oci_tenancy_ocid
@@ -282,7 +305,7 @@ resource "oci_core_subnet" "oke-subnet-loadbalancer" {
   count = var.enable_oracle ? 2 : 0
   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.0.availability_domains[0], "name")}"
   #cidr_block          = "${var.oci_vcn_cidr_prefix}.20.0/24"
-  cidr_block = cidrsubnet(var.cidr_block, 8, var.lbs + count.index)
+  cidr_block = cidrsubnet(var.oci_cidr_block, 8, var.lbs + count.index)
   display_name = "${var.oci_cluster_name}-LB-Subnet${count.index}"
   dns_label = "lb${count.index}"
   compartment_id = var.oci_tenancy_ocid
@@ -336,7 +359,7 @@ resource "oci_containerengine_node_pool" "test_node_pool" {
   #value = "${var.node_pool_initial_node_labels_value}"
   #}
   #node_metadata = "${var.oci_node_pool_node_metadata}"
-  quantity_per_subnet = var.nodes
+  quantity_per_subnet = var.oke_nodes
   #ssh_public_key = "${file(var.oci_node_pool_ssh_public_key)}"
 
   depends_on = [oci_core_subnet.oke-subnet-worker]
