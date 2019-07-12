@@ -2,34 +2,24 @@
 variable "enable_oracle" {
   description = "Enable / Disable Oracle (e.g. `1`)"
   type        = bool
-  default     = false
+  default     = true
 }
 
-variable "workstation_ipv4" {
-  description = "Workstation external IPv4 address"
-  type = string
-}
+# variable "workstation_ipv4" {
+#   description = "Workstation external IPv4 address"
+#   type = string
+# }
 
-variable "nodes" {
-  description = "Worker nodes (e.g. `2`)"
+variable "oke_nodes" {
+  description = "OKE Kubernetes worker nodes (e.g. `2`)"
+  type = number
   default     = 2
 }
 
 variable "random_cluster_suffix" {
   description = "Random 6 byte hex suffix for cluster name"
   type = string
-}
-
-
-variable "cidr_block" {
-  description = "OCI VCN CIDR block (e.g. `10.0.23.0/16`)"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "subnets" {
-  description = "List of 8-bit numbers of subnets base_cidr_block"
-  default     = 2
+  default = ""
 }
 
 variable "lbs" {
@@ -37,6 +27,16 @@ variable "lbs" {
   default     = 10
 }
 
+variable "oci_cidr_block" {
+  description = "OCI VCN CIDR block (e.g. `10.0.23.0/16`)"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "oci_subnets" {
+  description = "List of 8-bit numbers of subnets base_cidr_block"
+  default     = 2
+}
 
 variable "oci_user_ocid" {
   description = "OCI User OCID"
