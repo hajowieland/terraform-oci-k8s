@@ -1,8 +1,8 @@
-# Terraform Kubernetes on Oracle Cloud Infrastructure
+# Terraform Kubernetes on Oracle Cloud Infrastructure (OKE)
 
 This repository contains the Terraform module for creating a simple but ready-to-use Kubernetes Cluster on Oracle Container Engine for Kubernetes (OKE).
 
-It uses the latest available Kubernetes version available in the Oracle Cloud region and creates a kubeconfig file at completion.
+It uses the latest available Kubernetes version available in the Oracle Cloud Infrastructure region and creates a kubeconfig file at completion.
 
 
 - [Terraform Kubernetes on Oracle Cloud](#Terraform-Kubernetes-on-Oracle-Cloud)
