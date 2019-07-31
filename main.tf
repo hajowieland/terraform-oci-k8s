@@ -1,4 +1,5 @@
 resource "random_id" "cluster_name" {
+  count       = var.enable_oracle ? 1 : 0
   byte_length = 6
 }
 
@@ -14,11 +15,13 @@ resource "random_id" "password" {
 
 ## Get your workstation external IPv4 address:
 data "http" "workstation-external-ip" {
+  count       = var.enable_oracle ? 1 : 0
   url = "http://ipv4.icanhazip.com"
 }
 
 locals {
-  workstation-external-cidr = "${chomp(data.http.workstation-external-ip.body)}/32"
+  count       = var.enable_oracle ? 1 : 0
+  workstation-external-cidr = "${chomp(data.http.workstation-external-ip.0.body)}/32"
 }
 
 /**
@@ -31,6 +34,7 @@ data "oci_identity_availability_domains" "ads" {
 }
 
 data "oci_containerengine_cluster_option" "cluster_option" {
+  count       = var.enable_oracle ? 1 : 0
   #Required
   cluster_option_id = "all"
 }
@@ -292,8 +296,8 @@ resource "oci_containerengine_cluster" "oke" {
   count = var.enable_oracle ? 1 : 0
 
   compartment_id     = var.oci_tenancy_ocid
-  kubernetes_version = data.oci_containerengine_cluster_option.cluster_option.kubernetes_versions[length(data.oci_containerengine_cluster_option.cluster_option.kubernetes_versions) - 1]
-  name               = "${var.oci_cluster_name}-${random_id.cluster_name.hex}"
+  kubernetes_version = data.oci_containerengine_cluster_option.cluster_option[count.index].kubernetes_versions[length(data.oci_containerengine_cluster_option.cluster_option[count.index].kubernetes_versions) - 1]
+  name               = "${var.oci_cluster_name}-${random_id.cluster_name[count.index].hex}"
   vcn_id             = oci_core_vcn.oke-vcn.0.id
 
   options {
@@ -314,7 +318,7 @@ resource "oci_containerengine_node_pool" "oke_node_pool" {
 
   cluster_id         = oci_containerengine_cluster.oke.0.id
   compartment_id     = var.oci_tenancy_ocid
-  kubernetes_version = data.oci_containerengine_cluster_option.cluster_option.kubernetes_versions[length(data.oci_containerengine_cluster_option.cluster_option.kubernetes_versions) - 1]
+  kubernetes_version = data.oci_containerengine_cluster_option.cluster_option[count.index].kubernetes_versions[length(data.oci_containerengine_cluster_option.cluster_option[count.index].kubernetes_versions) - 1]
   name               = var.oci_node_pool_name
   node_image_name    = var.oci_node_pool_node_image_name
   node_shape         = var.oci_node_pool_node_shape
