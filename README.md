@@ -31,6 +31,7 @@ You need an [Oracle Cloud](https://cloud.oracle.com/en_US/tryit) account.
 
 * `export KUBECONFIG=./kubeconfig_oci` in repo root dir to use the generated kubeconfig file
 * The `enable_oracle` variable is used in the [hajowieland/terraform-kubernetes-multi-cloud](https://github.com/hajowieland/terraform-kubernetes-multi-cloud) module
+* It can take a few minutes after Terraform finishes until the Kubernetes nodes are available!
 
 
 ## Defaults
