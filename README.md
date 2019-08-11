@@ -4,6 +4,11 @@ This repository contains the Terraform module for creating a simple but ready-to
 
 It uses the latest available Kubernetes version available in the Oracle Cloud Infrastructure region and creates a kubeconfig file at completion.
 
+#### Link to my comprehensive blog post (beginner friendly):
+[https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/#oracle-cloud-infrastructure](https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/#oracle-cloud-infrastructure)
+
+
+
 <p align="center">
 <img alt="Oracle Logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/320px-Oracle_logo.svg.png">
 </p>
