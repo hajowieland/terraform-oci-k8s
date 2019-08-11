@@ -15,12 +15,12 @@ resource "random_id" "password" {
 
 ## Get your workstation external IPv4 address:
 data "http" "workstation-external-ip" {
-  count       = var.enable_oracle ? 1 : 0
-  url = "http://ipv4.icanhazip.com"
+  count = var.enable_oracle ? 1 : 0
+  url   = "http://ipv4.icanhazip.com"
 }
 
 locals {
-  count       = var.enable_oracle ? 1 : 0
+  count                     = var.enable_oracle ? 1 : 0
   workstation-external-cidr = "${chomp(data.http.workstation-external-ip.0.body)}/32"
 }
 
@@ -34,7 +34,7 @@ data "oci_identity_availability_domains" "ads" {
 }
 
 data "oci_containerengine_cluster_option" "cluster_option" {
-  count       = var.enable_oracle ? 1 : 0
+  count = var.enable_oracle ? 1 : 0
   #Required
   cluster_option_id = "all"
 }
@@ -95,7 +95,7 @@ resource "oci_core_default_route_table" "oke-default-rt" {
 
   route_rules {
     destination       = "0.0.0.0/0"
-    network_entity_id = "${oci_core_internet_gateway.oke-igw.0.id}"
+    network_entity_id = oci_core_internet_gateway.oke-igw[0].id
   }
 }
 
@@ -265,28 +265,28 @@ resource "oci_core_security_list" "oke-lb-security-list" {
 
 resource "oci_core_subnet" "oke-subnet-worker" {
   count               = var.enable_oracle ? var.oci_subnets : 0
-  availability_domain = "${lookup(data.oci_identity_availability_domains.ads.0.availability_domains[0], "name")}"
+  availability_domain = lookup(data.oci_identity_availability_domains.ads.0.availability_domains[0], "name")
   #cidr_block          = "${var.oci_vcn_cidr_prefix}.10.0/24"
   cidr_block        = cidrsubnet(var.oci_cidr_block, 8, var.oci_subnets + count.index)
   display_name      = "${var.oci_cluster_name}-WorkerSubnet${count.index}"
   dns_label         = "workers${count.index}"
   compartment_id    = var.oci_tenancy_ocid
   vcn_id            = oci_core_vcn.oke-vcn.0.id
-  security_list_ids = ["${oci_core_security_list.oke-worker-security-list.0.id}"]
+  security_list_ids = [oci_core_security_list.oke-worker-security-list[0].id]
   route_table_id    = oci_core_vcn.oke-vcn.0.default_route_table_id
   dhcp_options_id   = oci_core_vcn.oke-vcn.0.default_dhcp_options_id
 }
 
 resource "oci_core_subnet" "oke-subnet-loadbalancer" {
   count               = var.enable_oracle ? 2 : 0
-  availability_domain = "${lookup(data.oci_identity_availability_domains.ads.0.availability_domains[0], "name")}"
+  availability_domain = lookup(data.oci_identity_availability_domains.ads.0.availability_domains[0], "name")
   #cidr_block          = "${var.oci_vcn_cidr_prefix}.20.0/24"
   cidr_block        = cidrsubnet(var.oci_cidr_block, 8, var.lbs + count.index)
   display_name      = "${var.oci_cluster_name}-LB-Subnet${count.index}"
   dns_label         = "lb${count.index}"
   compartment_id    = var.oci_tenancy_ocid
   vcn_id            = oci_core_vcn.oke-vcn.0.id
-  security_list_ids = ["${oci_core_security_list.oke-lb-security-list.0.id}"]
+  security_list_ids = [oci_core_security_list.oke-lb-security-list[0].id]
   route_table_id    = oci_core_vcn.oke-vcn.0.default_route_table_id
   dhcp_options_id   = oci_core_vcn.oke-vcn.0.default_dhcp_options_id
 }
