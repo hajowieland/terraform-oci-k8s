@@ -67,8 +67,8 @@ See tables at the end for a comprehensive list of inputs and outputs.
 | oci_policy_statements | OCI Policy Statements in policy language | list(string) | "Allow service OKE to manage all-resources in tenancy" | yes |
 | oci_cluster_name | Oracle Cloud OKE Kubernetes cluster name | string | k8soci | yes |
 | oci_node_pool_name | Oracle Cloud OKE Kubernetes node pool name | string | k8s-nodepool-oci | yes |
-| oci_cluster_options_add_ons_is_kubernetes_dashboard_enabled | Enable the Kubernetes Dashboard | bool | false | yes |
-| oci_cluster_options_add_ons_is_tiller_enabled | Enable Tiller for helm | bool | false | yes |
+| oci_cluster_add_ons_kubernetes_dashboard | Enable the Kubernetes Dashboard | bool | false | yes |
+| oci_cluster_add_ons_tiller | Enable Tiller for helm | bool | false | yes |
 | oke_node_pool_size | OKE Kubernetes worker node pool quantity per subnet | number | 2 | yes |
 | oci_node_pool_node_shape | OCI Kubernetse node pool Shape | string | VM.Standard2.1 | yes |
 | oci_subnet_prohibit_public_ip_on_vnic | OCI VCN subnet prohibits assigning public IPs or not | bool | true | yes |

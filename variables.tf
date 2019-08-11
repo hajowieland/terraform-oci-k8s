@@ -105,13 +105,13 @@ variable "oci_node_pool_ssh_public_key" {
   default     = "~/.ssh/id_rsa.pub"
 }
 
-variable "oci_cluster_options_add_ons_is_kubernetes_dashboard_enabled" {
+variable "oci_cluster_add_ons_kubernetes_dashboard" {
   description = "Enable Kubernetes Dashboard (e.g. `false`)"
   type        = bool
   default     = false
 }
 
-variable "oci_cluster_options_add_ons_is_tiller_enabled" {
+variable "oci_cluster_add_ons_tiller" {
   description = "Enable Tiller for helm (e.g. `false`)"
   type        = bool
   default     = false

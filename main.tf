@@ -272,7 +272,8 @@ resource "oci_core_subnet" "oke-subnet-worker" {
   dns_label         = "workers${count.index}"
   compartment_id    = var.oci_tenancy_ocid
   vcn_id            = oci_core_vcn.oke-vcn.0.id
-  security_list_ids = [oci_core_security_list.oke-worker-security-list[0].id]
+  security_list_ids = [
+    oci_core_security_list.oke-worker-security-list[0].id]
   route_table_id    = oci_core_vcn.oke-vcn.0.default_route_table_id
   dhcp_options_id   = oci_core_vcn.oke-vcn.0.default_dhcp_options_id
 }
@@ -286,7 +287,8 @@ resource "oci_core_subnet" "oke-subnet-loadbalancer" {
   dns_label         = "lb${count.index}"
   compartment_id    = var.oci_tenancy_ocid
   vcn_id            = oci_core_vcn.oke-vcn.0.id
-  security_list_ids = [oci_core_security_list.oke-lb-security-list[0].id]
+  security_list_ids = [
+    oci_core_security_list.oke-lb-security-list[0].id]
   route_table_id    = oci_core_vcn.oke-vcn.0.default_route_table_id
   dhcp_options_id   = oci_core_vcn.oke-vcn.0.default_dhcp_options_id
 }
@@ -306,8 +308,8 @@ resource "oci_containerengine_cluster" "oke" {
       subnet
     ]
     add_ons {
-      is_kubernetes_dashboard_enabled = var.oci_cluster_options_add_ons_is_kubernetes_dashboard_enabled
-      is_tiller_enabled               = var.oci_cluster_options_add_ons_is_tiller_enabled
+      is_kubernetes_dashboard_enabled = var.oci_cluster_add_ons_kubernetes_dashboard
+      is_tiller_enabled               = var.oci_cluster_add_ons_tiller
     }
   }
 }
