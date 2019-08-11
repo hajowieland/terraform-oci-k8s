@@ -4,6 +4,10 @@ This repository contains the Terraform module for creating a simple but ready-to
 
 It uses the latest available Kubernetes version available in the Oracle Cloud Infrastructure region and creates a kubeconfig file at completion.
 
+<p align="center">
+<img alt="Oracle Logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/320px-Oracle_logo.svg.png">
+</p>
+
 
 - [Terraform Kubernetes on Oracle Cloud](#Terraform-Kubernetes-on-Oracle-Cloud)
   - [Requirements](#Requirements)
