@@ -1,5 +1,5 @@
 output "kubernetes_version" {
-  value = data.oci_containerengine_cluster_option.cluster_option.*.kubernetes_versions[length(data.oci_containerengine_cluster_option.cluster_option.*.kubernetes_versions) - 1]
+  value = data.oci_containerengine_cluster_option.cluster_option.0.kubernetes_versions[length(data.oci_containerengine_cluster_option.cluster_option.0.kubernetes_versions) - 1]
 }
 
 output "kubeconfig_path_oci" {
